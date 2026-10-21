@@ -3,6 +3,7 @@
 import argparse
 import logging
 import sys
+import uuid
 from typing import Any
 
 import httpx
@@ -52,6 +53,14 @@ def _request(method: str, path: str, **kwargs: Any) -> Any:
     if not resp.content:
         return {}
     return resp.json()
+
+
+def _memory_path(memory_id: str, suffix: str = "") -> str:
+    """Build /memories/<id>[suffix] from a memory id that must be a UUID, so an id can never become a different path."""
+    try:
+        return f"/memories/{uuid.UUID(str(memory_id).strip())}{suffix}"
+    except ValueError as exc:
+        raise ToolError(f"memory_id must be a UUID, got {memory_id!r}") from exc
 
 
 def _scope(user_id: str | None, agent_id: str | None, run_id: str | None) -> dict[str, str]:
@@ -128,7 +137,7 @@ def mem0_get(memory_id: str) -> dict[str, Any]:
     Args:
         memory_id: The memory's UUID (from mem0_search / mem0_list).
     """
-    return _request("GET", f"/memories/{memory_id}")
+    return _request("GET", _memory_path(memory_id))
 
 
 @read_tool
@@ -138,7 +147,7 @@ def mem0_history(memory_id: str) -> Any:
     Args:
         memory_id: The memory's UUID.
     """
-    return _request("GET", f"/memories/{memory_id}/history")
+    return _request("GET", _memory_path(memory_id, "/history"))
 
 
 @write_tool
@@ -186,7 +195,7 @@ def mem0_update(memory_id: str, text: str, metadata: dict[str, Any] | None = Non
     body: dict[str, Any] = {"text": text}
     if metadata is not None:
         body["metadata"] = metadata
-    return _request("PUT", f"/memories/{memory_id}", json=body)
+    return _request("PUT", _memory_path(memory_id), json=body)
 
 
 @destructive_tool
@@ -196,7 +205,7 @@ def mem0_delete(memory_id: str) -> dict[str, Any]:
     Args:
         memory_id: The memory's UUID.
     """
-    return _request("DELETE", f"/memories/{memory_id}")
+    return _request("DELETE", _memory_path(memory_id))
 
 
 # ── Entry point ──────────────────────────────────────────────────────
