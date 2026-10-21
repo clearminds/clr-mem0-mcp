@@ -1,0 +1,15 @@
+{
+  "mem0": {
+    "command": "uvx",
+    "args": [
+      "--from",
+      "git+ssh://git@github.com/clearminds/clr-mem0-mcp.git",
+      "clr-mem0-mcp"
+    ],
+    "env": {
+      "MEM0_URL": "${MEM0_URL}",
+      "MEM0_API_KEY": "${MEM0_API_KEY}",
+      "MEM0_USER_ID": "${MEM0_USER_ID}"
+    }
+  }
+}
