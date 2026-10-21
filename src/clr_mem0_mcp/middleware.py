@@ -39,9 +39,7 @@ class ToolValidationMiddleware(Middleware):
             if unexpected:
                 parts.append(f"Unexpected: {', '.join(unexpected)}")
             if missing and unexpected and len(missing) == 1 and len(unexpected) == 1:
-                parts.append(
-                    f"Hint: use '{missing[0]}' instead of '{unexpected[0]}'."
-                )
+                parts.append(f"Hint: use '{missing[0]}' instead of '{unexpected[0]}'.")
             if other:
                 parts.extend(other)
             parts.append(f"You provided: {sorted(provided.keys())}")

@@ -54,8 +54,7 @@ def remove_non_read_tools(mcp_instance: Any) -> int:
         tools = asyncio.run(mcp_instance.list_tools())
         items = ((t.name, t) for t in tools)
     to_remove = [
-        name for name, tool in items
-        if not (tool.annotations and tool.annotations.readOnlyHint)
+        name for name, tool in items if not (tool.annotations and tool.annotations.readOnlyHint)
     ]
     for name in to_remove:
         mcp_instance.remove_tool(name)

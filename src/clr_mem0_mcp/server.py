@@ -66,9 +66,7 @@ def _memory_path(memory_id: str, suffix: str = "") -> str:
 def _scope(user_id: str | None, agent_id: str | None, run_id: str | None) -> dict[str, str]:
     """Who the memory belongs to. Defaults to the configured user when nothing is given."""
     scope = {
-        k: v
-        for k, v in {"user_id": user_id, "agent_id": agent_id, "run_id": run_id}.items()
-        if v
+        k: v for k, v in {"user_id": user_id, "agent_id": agent_id, "run_id": run_id}.items() if v
     }
     if not scope:
         scope["user_id"] = _settings.mem0_user_id if _settings else ""
@@ -102,7 +100,11 @@ def mem0_search(
     Returns:
         {"results": [{"id", "memory", "score", "user_id", "metadata", "created_at", ...}]}
     """
-    body: dict[str, Any] = {"query": query, "filters": _scope(user_id, agent_id, run_id), "top_k": top_k}
+    body: dict[str, Any] = {
+        "query": query,
+        "filters": _scope(user_id, agent_id, run_id),
+        "top_k": top_k,
+    }
     if threshold is not None:
         body["threshold"] = threshold
     return _request("POST", "/search", json=body)
@@ -184,7 +186,9 @@ def mem0_add(
 
 
 @write_tool
-def mem0_update(memory_id: str, text: str, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
+def mem0_update(
+    memory_id: str, text: str, metadata: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Rewrite one memory's text (and optionally its metadata) in place.
 
     Args:
@@ -217,9 +221,13 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(description="mem0 MCP Server")
     parser.add_argument("--transport", choices=["stdio", "http"], default="stdio")
-    parser.add_argument("--host", type=str, default="127.0.0.1", help="HTTP host (--transport http)")
+    parser.add_argument(
+        "--host", type=str, default="127.0.0.1", help="HTTP host (--transport http)"
+    )
     parser.add_argument("--port", type=int, default=8000, help="HTTP port (--transport http)")
-    parser.add_argument("--log-level", default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR"])
+    parser.add_argument(
+        "--log-level", default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR"]
+    )
     parser.add_argument(
         "--read-only", action="store_true", default=None, help="Hide the add/update/delete tools"
     )
